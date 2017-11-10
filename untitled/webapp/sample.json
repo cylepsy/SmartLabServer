@@ -1,0 +1,14 @@
+{
+    "event": "CustomServer",
+    "url": "http://127.0.0.1:8000/",
+    "requestType": "POST",
+    "json": {
+      "key": "{{k}}",
+      "temp": "{{1}}",
+      "humid": "{{2}}",
+      "light": "{{3}}",
+      "time": "{{PARTICLE_PUBLISHED_AT}}"
+    },
+    "noDefaults": true
+}
+

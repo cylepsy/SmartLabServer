@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+       var jsonData = $.ajax({
+    {% load static %}
+    url: "{% static "webapp/data.json" %}",
+    dataType:"json",
+    async: false
+    }).responseText;
+   var data = new google.visualization.DataTable(jsonData);
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      chart.draw(data,{interpolateNulls: true});
+    }
+  </script>
+
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+       var jsonData = $.ajax({
+    {% load static %}
+    url: "{% static "webapp/humidity.json" %}",
+    dataType:"json",
+    async: false
+    }).responseText;
+   var data = new google.visualization.DataTable(jsonData);
+      var chart = new google.visualization.LineChart(document.getElementById('chart2_div'));
+      chart.draw(data,{interpolateNulls: true});
+    }
+  </script>
+
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+       var jsonData = $.ajax({
+    {% load static %}
+    url: "{% static "webapp/light.json" %}",
+    dataType:"json",
+    async: false
+    }).responseText;
+   var data = new google.visualization.DataTable(jsonData);
+      var chart = new google.visualization.LineChart(document.getElementById('chart3_div'));
+      chart.draw(data,{interpolateNulls: true});
+    }
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Smart Lab</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/webapp/index">Index</a></li>
+      <li class="active"><a href="#">Chart</a></li>
+      <li><a href="/webapp/about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="container">
+  <div class="row">
+    <div id="chart_div"></div>
+  </div>
+  <div class="row">
+    <div id="chart2_div"></div>
+  </div>
+  <div class="row">
+    <div id="chart3_div"></div>
+  </div>
+</div>
+
+</body>
+</html>
