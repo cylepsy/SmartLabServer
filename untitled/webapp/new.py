@@ -86,6 +86,13 @@ def receive(request):
 
     return HttpResponse(status=200)
 
+@require_GET
+def getmotion(request):
+    to_json = {
+        "key1": "value1",
+        "key2": "value2"}
+    return HttpResponse(simplejson.dumps(to_json), mimetype='application/json')
+
 
 @require_GET
 def gethum(request):
@@ -110,10 +117,7 @@ def sendMotion(request):
     with open('newmotion.txt','a') as newfile:
         newfile.write(message)
         newfile.close
-    with open('motionupdate.txt','w') as mu:
-        mu.write(message)
-        mu.close
-    return HttpResponse(status=200)
+        return HttpResponse(status=200)
 
 @csrf_exempt
 @require_GET
@@ -122,27 +126,7 @@ def getWeather(request):
         return HttpResponse(weather)
 
 
-@csrf_exempt
-@require_POST
-def sendZone(request):
-    message = request.body.decode('UTF-8')
-    with open('zone.txt','w') as zone:
-        zone.write(message)
-        zone.close
-        return HttpResponse(status=200)
-
-@csrf_exempt
-@require_GET
-def getZone(request):
-    with open('zone.txt') as zone:
-        return HttpResponse(zone)
-
     
-@csrf_exempt
-@require_GET
-def getMotion(request):
-    with open('motionupdate.txt') as motion:
-        return HttpResponse(motion)
 
 @csrf_exempt
 @require_POST
@@ -164,18 +148,18 @@ def sendWeather(request):
         nfile.close
     if data[3] == '1':
         tempdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[0]}, {}, {}]}
-        lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[2]}, {}, {}]}
-        humdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[1]}, {}, {}]}
+        lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[1]}, {}, {}]}
+        humdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[2]}, {}, {}]}
 
     if data[3] == '2':
         tempdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[0]}, {}]}
-        lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[2]}, {}]}
-        humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[1]}, {}]}
+        lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[1]}, {}]}
+        humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[2]}, {}]}
 
     if data[3] == '3':
         tempdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[0]}]}
-        lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[2]}]}
-        humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[1]}]}
+        lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[1]}]}
+        humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[2]}]}
 
     with open('webapp/static/webapp/data.json', 'rb+') as outfile:
         outfile.seek(-2, os.SEEK_END)
@@ -210,16 +194,9 @@ def sendWeather(request):
 
     
     with open('weathertest.txt','a') as newfile:
-        newfile.write(data[0])
-        newfile.write(",")
-        newfile.write(data[1])
-        newfile.write(",")
-        newfile.write(data[2])
-        newfile.write(",")
-        newfile.write(data[3])
-        newfile.write(",")
-        newfile.write(data[5])
-        newfile.write(",")
+        for temp in data:
+            newfile.write(temp)
+            newfile.write(",")
         newfile.write("\n")
         newfile.close
         return HttpResponse(status=200)
@@ -263,10 +240,17 @@ def index(request):
 
 def about(request):
     return render(request,'webapp/about.html')
-def zone(request):
-    return render(request,'webapp/zone.html')
-def activity(request):
-    return render(request,'webapp/activity.html')
+def get(request):
+    count = 0
+    Liste = []
+    for line in reversed(list(open("motion.txt"))):
+        count = count + 1
+        line1 = line.rstrip()
+        Liste.append(line1)
+        if count > 5:
+            break
+    jsonfile = json.dumps(Liste)
+    return render(request,'webapp/get.html',{'line1':Liste(0),'line2':Liste(1),'line3':Liste(2)}) 
 
 def rfcToGen(rfc):
     rfc3399 = rfc
