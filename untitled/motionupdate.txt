@@ -1,1 +1,1 @@
-Motion detected in zone 3. Device ID: 190037001047343438323536
+Sound detected in zone 3. Device ID: 190037001047343438323536 in: Thu Nov 30 16:18:54 2017

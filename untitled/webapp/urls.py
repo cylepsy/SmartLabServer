@@ -20,7 +20,11 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^getzone', views.getZone, name= 'getZone'),
     url(r'^showzone', views.zone, name= 'zone'),
     url(r'^showactivity', views.activity, name='activity'),
-
+    url(r'^sendper', views.sendPer, name='sendPer'),
+    url(r'^getper', views.getPer, name='getPer'),
+    url(r'^getup', views.getWeatherUp, name='getWeatherUp'),
+    url(r'^senddoor', views.sendDoor, name='sendDoor'),
+    url(r'^getdoor', views.getDoor, name='getDoor'),
 
 
     
