@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>Team 3 SLS</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
+
+<style>
+.jumbotron {
+    background-color: #c9c9c9;
+    color: #ffffff;
+}
+</style>
+
 <body>
   <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -24,26 +32,48 @@
 
 
 <div class="jumbotron text-center">
-  <h1>SCC 330 Project</h1>
-  <p>Smart lab project monitor page</p>
+  <h1>Smart Lab System</h1>
+  <p>Lab monitoring page</p>
 </div>
 
-<div class="container">
-  <div class="row">
-    <div class="col-sm-4">
-      <h3>Working with Particle photon</h3>
-      <p>Woring with multiple sensors </p>
-    </div>
-    <div class="col-sm-4">
-      <h3>Real time data input</h3>
-      <p>data input and stored into google sheet in realtime</p>
-    </div>
-    <div class="col-sm-4">
-      <h3>Real time feedback</h3>
-      <p>Real time data feedback with line charts powered by google chart</p>
-    </div>
-  </div>
+<style>
+.zone1 {
+    background-color: #9ad3de;
+}
+
+.zone2 {
+    background-color: #e3e3e3;
+}
+
+.zone3 {
+    background-color: #9ad3de;
+}
+</style>
+
+<!-- Container (About Section) -->
+<div class="container-fluid zone1">
+  <h2>Zone 1</h2>
+  <h4><strong>MOTION:</strong> Last motion detected at:</h4>
+  <p><strong>SOUND:</strong> Last sound detected at:</p>
+  <button class="btn btn-default btn-lg">View details</button>
 </div>
+
+<div class="container-fluid zone2">
+  <h2>Zone 2</h2>
+  <h4><strong>MOTION:</strong> Our mission lorem ipsum..</h4>
+  <p><strong>SOUND:</strong> Our vision Lorem ipsum..</p>
+  <button class="btn btn-default btn-lg">View details</button>
+</div>
+
+<div class="container-fluid zone3">
+  <h2>Zone 3</h2>
+  <h4><strong>MOTION:</strong> Our mission lorem ipsum..</h4>
+  <p><strong>SOUND:</strong> Our vision Lorem ipsum..</p>
+  <button class="btn btn-default btn-lg">View details</button>
+</div>
+
+</body>
+</html>
 
 </body>
 </html>
