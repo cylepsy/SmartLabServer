@@ -16,3 +16,37 @@ Data stored is displayed with line charts powered by Google Charts in JS. Since 
 
 ## Misc
 I used Bootstrap libraries for CSS in my HTMLs.
+## APIs For the Door Sensors
+
+The aim of the these two APIs is to receive a string containing the coming or leaving info from the door of lab and a time string. The server uses this to generate a history of people activities in lab and present current number of people in lab.
+
+- **/senddoor**
+
+  *requires method: POST*
+
+  post data and date string to this path from photon
+
+  String body:
+
+  ```c
+  num + ',' + Time.timeStr()
+    //num == 1 || -1
+  ```
+
+  To reset number of people to 0, set the string body to:
+
+  ```c
+  "-reset"
+  ```
+
+  And if this is done successfully, you would see success message from response of this request
+
+- **/getdoor**
+
+  *requires method: GET*
+
+  To get current number of people in the lab (always >= 0).
+
+  The result would be returned as HTTP response.
+
+
