@@ -20,6 +20,8 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^getzone', views.getZone, name= 'getZone'),
     url(r'^showzone', views.zone, name= 'zone'),
     url(r'^showactivity', views.activity, name='activity'),
+    url(r'^lighton', views.lightOn, name='lightOn'),
+
 
 
 
