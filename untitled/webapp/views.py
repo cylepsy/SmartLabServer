@@ -9,8 +9,16 @@ from django.views.decorators.http import require_POST, require_GET
 from .twitter import Twfuncs
 
 
-# Create your views here.
+# used to determine whether or not to turn light on (easier than scanning a 10000 lines of a text file)
+# 1,2,3 correspond to lab zones
+global lightLevel1
+global lightLevel2
+global lightLevel3
 
+lightLevel1 = 3.0
+lightLevel2 = 3.0
+lightLevel3 = 3.0
+# Create your views here.
 @csrf_exempt
 @require_POST
 def receive(request):
@@ -145,12 +153,13 @@ def getDoor(request):
         return HttpResponse(newfile)
 
 
-
 @require_GET
 def getPer(request):
     with open('per.txt') as newfile:
         return HttpResponse(newfile)
 
+
+# gets called when sound/motion are detected
 @csrf_exempt
 @require_POST
 def sendMotion(request):
@@ -161,6 +170,13 @@ def sendMotion(request):
     with open('motionupdate.txt','w') as mu:
         mu.write(message)
         mu.close
+    # turn light on where motion/sound was detected if light level below certain threshold (3 in this case,
+    # decided to hard code it as it is easier to adjust and gives us more control)
+    print("Turning lights on")
+    zone = message[(message.find('zone')+5)]  # figure out what zone activity was detected in
+    print(zone)
+    lightOn(zone)
+
     return HttpResponse(status=200)
 
 @csrf_exempt
@@ -220,15 +236,27 @@ def sendWeather(request):
         lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[2]}, {}, {}]}
         humdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[1]}, {}, {}]}
 
+        global lightLevel1
+        lightLevel1 = data[2]
+        print(data[2])
+
     if data[3] == '2':
         tempdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[0]}, {}]}
         lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[2]}, {}]}
         humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[1]}, {}]}
 
+        global lightLevel2
+        lightLevel2 = data[2]
+        print(data[2])
+
     if data[3] == '3':
         tempdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[0]}]}
         lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[2]}]}
         humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[1]}]}
+
+        global lightLevel3
+        lightLevel3 = data[2]
+        print(data[2])
 
     with open('webapp/static/webapp/data.json', 'rb+') as outfile:
         outfile.seek(-2, os.SEEK_END)
@@ -330,3 +358,73 @@ def rfcToGen(rfc):
     second = date[1].split(':')[2].split('.')[0]
     new = year + "," + month + "," + day + "," + hour + ',' + minute + ',' + second
     return new
+
+#Control lights
+import socket
+
+
+def lightOn(zone):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_address = ('178.62.58.245', 38899)
+    s.connect(server_address)
+
+    prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
+    if  zone == '3' and float(lightLevel3) < 3:
+        print("light level " + str(lightLevel3))
+        s.send(prefix + b"490\n")
+        s.send(prefix + b"c90\n")
+
+    if zone == '2' and float(lightLevel2) < 3:
+        print("light level " + str(lightLevel2))
+        s.send(prefix + b"470\n")
+        s.send(prefix + b"c70\n")
+
+    if zone == '1' and float(lightLevel1) < 3:
+        print("light level " + str(lightLevel1))
+        s.send(prefix + b"450\n")
+        s.send(prefix + b"c50\n")
+
+    s.close()
+
+def lightOff(zone):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_address = ('178.62.58.245', 38899)
+    s.connect(server_address)
+
+    prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
+    if zone == 3:
+        s.send(prefix + b"4a0\n")
+
+    if zone == 2:
+        s.send(prefix + b"480\n")
+
+    if zone == 1:
+        s.send(prefix + b"460\n")
+
+    s.close()
+
+def allOn():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_address = ('178.62.58.245', 38899)
+    s.connect(server_address)
+
+    prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
+    s.send(prefix + b"420\n")
+
+    s.close()
+
+def allOff():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_address = ('178.62.58.245', 38899)
+    s.connect(server_address)
+
+    prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
+
+    s.send(prefix + b"410\n")
+
+    s.close()
+
