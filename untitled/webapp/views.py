@@ -319,17 +319,17 @@ def lightOn(zone):
     s.connect(server_address)
 
     prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
-    if  zone == '3':  #and 2 < 3:
+    if  zone == '3' and float(lightLevel3) < 3:
         print("light level " + str(lightLevel3))
         s.send(prefix + b"490\n")
         s.send(prefix + b"c90\n")
 
-    if zone == '2' and lightLevel2 < 3:
+    if zone == '2' and float(lightLevel2) < 3:
         print("light level " + str(lightLevel2))
         s.send(prefix + b"470\n")
         s.send(prefix + b"c70\n")
 
-    if zone == '1' and lightLevel1 < 3:
+    if zone == '1' and float(lightLevel1) < 3:
         print("light level " + str(lightLevel1))
         s.send(prefix + b"450\n")
         s.send(prefix + b"c50\n")
