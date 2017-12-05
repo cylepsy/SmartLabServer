@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
+from .twitter import Twfuncs
 
 
 # Create your views here.
@@ -121,14 +122,17 @@ def sendDoor(request):
             door.close
             return HttpResponse('reset done')
 
-    with open('doorhistory.txt','w') as history:
+    with open('doorhistory.txt','a') as history:
         history.write(message + '\n')
         history.close
    
     with open('door.txt') as current:
-        number = str(message.split(',')[0])
+        status  = str(message.split(',')[0])
         f = current.read().rstrip().split(',')[0]
-        now = int(number) + int(f)
+        if status == 'ENTERING':
+            now = int(f) + 1
+        if status == 'LEAVING':
+            now = int(f) - 1
         if now < 0:
             now = 0
         current.close 
@@ -268,7 +272,9 @@ def sendWeather(request):
     with open('weatherupdate.txt','w') as up:
         up.write(message)
         up.close
-        return HttpResponse(status=200)
+    tw = Twfuncs()
+    tw.update('weather updates! ' + message)
+    return HttpResponse(status=200)
 
 # Convert RFC timestamp to General
 def append(data):
