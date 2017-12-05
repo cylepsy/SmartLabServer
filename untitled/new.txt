@@ -1,9 +1,0 @@
-{"time": "2017-11-08T21:10:29.806Z", "light": "", "humid": "", "temp": "", "key": "3"}
-{"time": "2017-11-08T21:10:29.806Z", "datatype": "Motion", "motion": "Sound detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}
-{"time": "2017-11-08T21:10:36.865Z", "datatype": "Motion", "motion": "Motion detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}
-{"time": "2017-11-08T21:10:36.994Z", "datatype": "Motion", "motion": "Sound detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}
-{"time": "2017-11-08T21:10:42.430Z", "datatype": "Motion", "motion": "Motion detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}
-{"time": "2017-11-08T21:10:44.964Z", "datatype": "Motion", "motion": "Sound detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}
-{"time": "2017-11-08T21:10:52.016Z", "datatype": "Motion", "motion": "Sound detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}
-{"time": "2017-11-08T21:10:52.016Z", "datatype": "Motion", "motion": "Motion detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}
-{"time": "2017-11-08T21:11:11.370Z", "datatype": "Motion", "motion": "Sound detected in zone 3. Device ID: 190037001047343438323536", "key": "3"}

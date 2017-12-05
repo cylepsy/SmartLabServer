@@ -55,6 +55,53 @@
       chart.draw(data,{interpolateNulls: true});
     }
   </script>
+	<script>
+function loadDoc() {
+	  var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange=function() {
+		        if (this.readyState == 4 && this.status == 200) {
+				      document.getElementById("demo").innerHTML = this.responseText;
+				          }
+			  };
+	      xhttp.open("GET", "/webapp/getzone" + Math.random(), true);
+	        xhttp.send();
+}
+window.setInterval(function(){loadDoc();}, 1000);
+
+		</script>
+
+		<script>
+function loadDoc2() {
+	  var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange=function() {
+		        if (this.readyState == 4 && this.status == 200) {
+				      document.getElementById("demo2").innerHTML = this.responseText;
+				          }
+			  };
+	      xhttp.open("GET", "/webapp/getmotion" + Math.random(), true);
+	        xhttp.send();
+}
+window.setInterval(function(){loadDoc2();}, 1000);
+
+		</script>
+		<script>
+function loadDoc3() {
+	  var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange=function() {
+		        if (this.readyState == 4 && this.status == 200) {
+				      document.getElementById("demo3").innerHTML = this.responseText;
+				          }
+			  };
+	      xhttp.open("GET", "/webapp/getup" + Math.random(), true);
+	        xhttp.send();
+}
+window.setInterval(function(){loadDoc3();}, 1000);
+
+		</script>
+
+
+
+
 </head>
 <body>
   <nav class="navbar navbar-default">
@@ -81,6 +128,19 @@
   <div class="row">
     <div id="chart3_div"></div>
   </div>
+  <div class="row">
+
+	  <p> The user is currently in:</p>
+    <p id="demo"></p>
+
+  </div>
+  <div class="row">
+	  <p id="demo2"> </p>
+  </div>
+  <div class="row">
+	  <p id="demo3"> </p>
+  <div>
+
 </div>
 
 </body>

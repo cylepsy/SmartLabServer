@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
+from .twitter import Twfuncs
 
 
 # used to determine whether or not to turn light on (easier than scanning a 10000 lines of a text file)
@@ -95,6 +96,7 @@ def receive(request):
     return HttpResponse(status=200)
 
 
+
 @require_GET
 def gethum(request):
     with open('webapp/static/webapp/humidity.json') as json_data:
@@ -109,6 +111,53 @@ def gettemp(request):
 def getlight(request):
     with open('webapp/static/webapp/light.json') as json_data:
         return HttpResponse(json_data)
+
+@csrf_exempt
+@require_POST
+def sendPer(request):
+    message = request.body.decode('UTF-8')
+    with open('per.txt','w') as newfile:
+        newfile.write(message)
+        newfile.close
+        return HttpResponse(status=200)
+@csrf_exempt
+@require_POST
+def sendDoor(request):
+    message = request.body.decode('UTF-8')
+    if message == '-reset':
+        with open('door.txt','w') as door:
+            door.write(str(0))
+            door.close
+            return HttpResponse('reset done')
+
+    with open('doorhistory.txt','a') as history:
+        history.write(message + '\n')
+        history.close
+   
+    with open('door.txt') as current:
+        status  = str(message.split(',')[0])
+        f = current.read().rstrip().split(',')[0]
+        if status == 'ENTERING':
+            now = int(f) + 1
+        if status == 'LEAVING':
+            now = int(f) - 1
+        if now < 0:
+            now = 0
+        current.close 
+    with open('door.txt','w') as door:
+        door.write(str(now))
+        return HttpResponse(status=200)
+@require_GET
+def getDoor(request):
+    with open('door.txt') as newfile:
+        return HttpResponse(newfile)
+
+
+@require_GET
+def getPer(request):
+    with open('per.txt') as newfile:
+        return HttpResponse(newfile)
+
 
 # gets called when sound/motion are detected
 @csrf_exempt
@@ -136,6 +185,11 @@ def getWeather(request):
     with open('weathertest.txt') as weather:
         return HttpResponse(weather)
 
+@csrf_exempt
+@require_GET
+def getWeatherUp(request):
+    with open('weatherupdate.txt') as weatheru:
+        return HttpResponse(weatheru)
 
 @csrf_exempt
 @require_POST
@@ -230,12 +284,6 @@ def sendWeather(request):
         json.dump(lightdata, outfile)
         outfile.write(', ]}')
         outfile.close()
-
-
-
-
-
-    
     with open('weathertest.txt','a') as newfile:
         newfile.write(data[0])
         newfile.write(",")
@@ -249,7 +297,13 @@ def sendWeather(request):
         newfile.write(",")
         newfile.write("\n")
         newfile.close
-        return HttpResponse(status=200)
+    with open('weatherupdate.txt','w') as up:
+        up.write(message)
+        up.close
+    tw = Twfuncs()
+    tw.update('weather updates! ' + message)
+    return HttpResponse(status=200)
+
 # Convert RFC timestamp to General
 def append(data):
     # use creds to create a client to interact with the Google Drive API
@@ -283,11 +337,8 @@ def append(data):
 
 def chart(request):
     return render(request,'webapp/show.html')
-
-
 def index(request):
     return render(request,'webapp/index.html')
-
 def about(request):
     return render(request,'webapp/about.html')
 def zone(request):
