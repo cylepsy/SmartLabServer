@@ -311,7 +311,13 @@ def updateWeather(request):
         message = 'Weather data updates from zone ' + data[3] + '! Tempreture is ' + data[0] + ', humidity is ' + data[1] + ', ambient light level is ' + data[2]
     tw = Twfuncs()
     tw.update(message)
-    return HttpResponse('Weather data updated to twittert!')
+    return HttpResponse('Weather data updated to twitter!')
+def updateActivity(request):
+    with open ('motionupdate.txt') as up:
+        data = up.read()
+    tw = Twfuncs()
+    tw.update(data)
+    return HttpResponse('Activity data updated to twitter!')
 # Convert RFC timestamp to General
 def append(data):
     # use creds to create a client to interact with the Google Drive API

@@ -27,6 +27,7 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^getdoor', views.getDoor, name='getDoor'),
     url(r'^lighton', views.lightOn, name='lightOn'),
     url(r'^updateweather', views.updateWeather, name='updateWeather'),
+    url(r'^updateactivity', views.updateActivity, name='updateActivity'),
 
 
 
