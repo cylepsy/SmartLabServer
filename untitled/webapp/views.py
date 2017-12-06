@@ -218,7 +218,7 @@ def sendKettle(request):
     message = request.body.decode('UTF-8')
     num = message.split(',')[0]
     with open('kettle.txt','w') as kettle:
-        kettle.write(message)
+        kettle.write(num)
         kettle.close
         return HttpResponse(status=200)
 

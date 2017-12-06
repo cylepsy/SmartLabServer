@@ -26,7 +26,7 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^senddoor', views.sendDoor, name='sendDoor'),
     url(r'^getdoor', views.getDoor, name='getDoor'),
     url(r'^lighton', views.lightOn, name='lightOn'),
-    url(r'^sendettle', views.sendKettle, name='sendKettle'),
+    url(r'^sendkettle', views.sendKettle, name='sendKettle'),
     url(r'^getkettle', views.getKettle, name='getKettle'),
 
 
