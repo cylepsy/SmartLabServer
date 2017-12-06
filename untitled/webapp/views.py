@@ -133,7 +133,7 @@ def sendDoor(request):
     with open('doorhistory.txt','a') as history:
         history.write(message + '\n')
         history.close
-   
+
     with open('door.txt') as current:
         status  = str(message.split(',')[0])
         f = current.read().rstrip().split(',')[0]
@@ -143,7 +143,7 @@ def sendDoor(request):
             now = int(f) - 1
         if now < 0:
             now = 0
-        current.close 
+        current.close
     with open('door.txt','w') as door:
         door.write(str(now))
         return HttpResponse(status=200)
@@ -206,7 +206,7 @@ def getZone(request):
     with open('zone.txt') as zone:
         return HttpResponse(zone)
 
-    
+
 @csrf_exempt
 @require_GET
 def getMotion(request):
@@ -222,7 +222,7 @@ def sendWeather(request):
     elements  = timestr.split('-')
     newtime = ""
     for ele in elements:
-        newtime = newtime + ele + ',' 
+        newtime = newtime + ele + ','
     newtime = newtime[:-1]
     with open('www.txt','a') as nfile:
         for temp in data:
@@ -305,7 +305,12 @@ def sendWeather(request):
     tw.update('weather updates! ' + message)
     '''
     return HttpResponse(status=200)
-
+def updateWeather():
+    with open ('weatherupdate.txt') as up:
+        data = up.read().split(',')
+        message = 'Weather data updates from zone ' + data[3] + '! Tempreture is ' + data[0] + ', humidity is ' + data[1] + ', ambient light level is ' + data[2]
+    tw = Twfuncs()
+    tw.update(message)
 # Convert RFC timestamp to General
 def append(data):
     # use creds to create a client to interact with the Google Drive API
@@ -429,4 +434,3 @@ def allOff():
     s.send(prefix + b"410\n")
 
     s.close()
-
