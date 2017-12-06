@@ -227,7 +227,7 @@ def sendKettle(request):
 def sendHy(request):
     message = request.body.decode('UTF-8')
     with open('hy.txt','a') as hy:
-        hy.write(message)
+        hy.write(message + ',')
         hy.close
         return HttpResponse(status=200)
 
