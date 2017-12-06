@@ -29,6 +29,9 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^sendkettle', views.sendKettle, name='sendKettle'),
     url(r'^getkettle', views.getKettle, name='getKettle'),
 
+    url(r'^sendhy', views.sendHy, name='sendHy'),
+    url(r'^gethy', views.getHy, name='getHy'),
+
 
 
 
