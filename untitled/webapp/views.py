@@ -216,6 +216,7 @@ def getKettle(request):
 @require_POST
 def sendKettle(request):
     message = request.body.decode('UTF-8')
+    num = message.split(',')[0]
     with open('kettle.txt','w') as kettle:
         kettle.write(message)
         kettle.close
