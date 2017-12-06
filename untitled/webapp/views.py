@@ -308,7 +308,12 @@ def sendWeather(request):
 def updateWeather(request):
     with open ('weatherupdate.txt') as up:
         data = up.read().split(',')
-        message = 'Weather data updates from zone ' + data[3] + '! Tempreture is ' + data[0] + ', humidity is ' + data[1] + ', ambient light level is ' + data[2]
+        lightlevel = float(data[3])
+        if lightlevel > 6:
+            lightStr = "On"
+        else:
+            lightStr = "Off"
+        message = 'Lab weather data updates ! \nTempreture is ' + data[0] + '. \nHumidity is ' + data[1] + '.\n' + 'It seems the light has been turned ' + lightStr
     tw = Twfuncs()
     tw.update(message)
     return HttpResponse('Weather data updated to twitter!')
