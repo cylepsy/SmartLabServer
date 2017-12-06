@@ -300,8 +300,10 @@ def sendWeather(request):
     with open('weatherupdate.txt','w') as up:
         up.write(message)
         up.close
+    '''
     tw = Twfuncs()
     tw.update('weather updates! ' + message)
+    '''
     return HttpResponse(status=200)
 
 # Convert RFC timestamp to General
