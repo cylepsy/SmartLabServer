@@ -133,7 +133,7 @@ def sendDoor(request):
     with open('doorhistory.txt','a') as history:
         history.write(message + '\n')
         history.close
-   
+
     with open('door.txt') as current:
         status  = str(message.split(',')[0])
         f = current.read().rstrip().split(',')[0]
@@ -143,7 +143,7 @@ def sendDoor(request):
             now = int(f) - 1
         if now < 0:
             now = 0
-        current.close 
+        current.close
     with open('door.txt','w') as door:
         door.write(str(now))
         return HttpResponse(status=200)
@@ -205,8 +205,22 @@ def sendZone(request):
 def getZone(request):
     with open('zone.txt') as zone:
         return HttpResponse(zone)
+@csrf_exempt
+@require_GET
+def getKettle(request):
+    with open('kettle.txt') as kettle:
+        return HttpResponse(kettle)
 
-    
+
+@csrf_exempt
+@require_POST
+def sendKettle(request):
+    message = request.body.decode('UTF-8')
+    with open('kettle.txt','w') as kettle:
+        kettle.write(message)
+        kettle.close
+        return HttpResponse(status=200)
+
 @csrf_exempt
 @require_GET
 def getMotion(request):
@@ -222,7 +236,7 @@ def sendWeather(request):
     elements  = timestr.split('-')
     newtime = ""
     for ele in elements:
-        newtime = newtime + ele + ',' 
+        newtime = newtime + ele + ','
     newtime = newtime[:-1]
     with open('www.txt','a') as nfile:
         for temp in data:
@@ -427,4 +441,3 @@ def allOff():
     s.send(prefix + b"410\n")
 
     s.close()
-
