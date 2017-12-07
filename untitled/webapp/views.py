@@ -1,13 +1,14 @@
 import json
 import os
 import gspread
+import datetime
 from oauth2client.service_account import ServiceAccountCredentials
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from .twitter import Twfuncs
-
+from .facebook import Fbfuncs
 
 # used to determine whether or not to turn light on (easier than scanning a 10000 lines of a text file)
 # 1,2,3 correspond to lab zones
@@ -164,12 +165,30 @@ def getPer(request):
 @require_POST
 def sendMotion(request):
     message = request.body.decode('UTF-8')
+    activityType = message.split(' ')[0]
+    if activityType == 'Sound':
+        with open('soundupdate.txt','w') as sound:
+            sound.write(message)
+            sound.close
+        with open('soundhistory.txt','a') as sh:
+            sh.write(message)
+            sh.close
+    
+    if activityType == 'Motion':
+        with open('motionupdate.txt','w') as motion:
+            motion.write(message)
+            motion.close
+        with open('motionhistory.txt','a') as mh:
+            mh.write(message)
+            mh.close
+    '''
     with open('newmotion.txt','a') as newfile:
         newfile.write(message)
         newfile.close
     with open('motionupdate.txt','w') as mu:
         mu.write(message)
         mu.close
+    '''
     # turn light on where motion/sound was detected if light level below certain threshold (3 in this case,
     # decided to hard code it as it is easier to adjust and gives us more control)
     print("Turning lights on")
@@ -308,20 +327,48 @@ def sendWeather(request):
 def updateWeather(request):
     with open ('weatherupdate.txt') as up:
         data = up.read().split(',')
-        lightlevel = float(data[3])
+        lightlevel = float(data[2])
         if lightlevel > 6:
             lightStr = "On"
         else:
             lightStr = "Off"
-        message = 'Lab weather data updates ! \nTempreture is ' + data[0] + '. \nHumidity is ' + data[1] + '.\n' + 'It seems the light has been turned ' + lightStr
+        message = 'Hourly Lab weather data updates ! \nTempreture is ' + data[0] + '. \nHumidity is ' + data[1] + '.\n' + 'It seems the light has been turned ' + lightStr + '. Lightlevel: ' + data[2] + ' Lumen.'
     tw = Twfuncs()
     tw.update(message)
+    fb = Fbfuncs()
+    fb.update(message)
     return HttpResponse('Weather data updated to twitter!')
 def updateActivity(request):
-    with open ('motionupdate.txt') as up:
-        data = up.read()
+    message = 'Hourly activity update! \n'
+    soundStr = 'Last '
+    motionStr = 'Last '
+    with open('soundupdate.txt') as su:
+        soundUpdate = su.read()
+        if soundUpdate == 'null':
+            soundStr = 'There has not been any new sound made!'
+        else:
+            soundStr = soundStr + soundUpdate
+            
+    with open('motionupdate.txt') as mu:
+        motionUpdate = mu.read().strip()
+        if motionUpdate == 'null':
+            motionStr = 'There has not been any new motion made!'
+        else:
+            motionStr = motionStr + motionUpdate
+
+    with open('door.txt') as door:
+        num = door.read()
+    numStr = '\nThere are currently ' + num + ' people in the lab.' 
+    if int(num) == 0:
+        numStr = '\nThere is currently nobody in the lab.'
     tw = Twfuncs()
-    tw.update(data)
+    fb = Fbfuncs()
+    now = datetime.datetime.now()
+    now = '\n---' + str(now)
+    tw.update(message + soundStr + now)
+    fb.update(message + soundStr + now)
+    tw.update(motionStr + numStr + now)
+    fb.update(motionStr + numStr + now)
     return HttpResponse('Activity data updated to twitter!')
 # Convert RFC timestamp to General
 def append(data):

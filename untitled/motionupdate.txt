@@ -1,1 +1,1 @@
-Sound detected in zone 1. Device ID: 240037000c47343438323536 in: Wed Dec  6 22:58:26 2017
+null

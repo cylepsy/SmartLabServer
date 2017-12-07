@@ -1,7 +1,7 @@
 import facebook
 
 class Fbfuncs():
-    atoken = "EAACEdEose0cBAFh2DxErANhdlf6JXiq4QpUgABa2q168AtEe9O7Lw17taKyWLx3dKBZBZCdoDXLVcVlbv8SzoZCjiEIHjRYQxSgCXsjpJutarmnpZAZC4Lv557tc4QZB7DIU5x8kJxVpwqduaIbYv89tN2jtA4pjZC2hq4We0OHkXANHZAyCZAqrYNqOKd3NSjRonKNwwSjMhWwZDZD"
+    atoken = "EAACEdEose0cBAM68sgQFUpEPBcZBPwTk02jujS0qZA9QiWICSA6EcJumhxdlid4t6KTztZBqACYkJwbj7HALlVgyzSQozDJweU4ba1hYU0RGlhskzsZBcoXWTuOtIm6KJTZC6fzkMTCf7AxtTbzaG04nAh8l2RIlXvZC9abZBpFkxxbUatwaHUjGH4FXnAllHWZCaO7MZBz8qUQZDZD"
     graph = facebook.GraphAPI(access_token = atoken, version = "2.1")
     def update(self, msg):
         self.graph.put_object(parent_object='me', connection_name='feed', message=msg)
