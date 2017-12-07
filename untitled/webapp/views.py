@@ -19,6 +19,16 @@ global lightLevel3
 lightLevel1 = 3.0
 lightLevel2 = 3.0
 lightLevel3 = 3.0
+
+global bulb1
+global bulb2
+global bulb3
+
+bulb1 = False
+bulb2 = False
+bulb3 = False
+
+
 # Create your views here.
 @csrf_exempt
 @require_POST
@@ -191,7 +201,7 @@ def sendMotion(request):
     '''
     # turn light on where motion/sound was detected if light level below certain threshold (3 in this case,
     # decided to hard code it as it is easier to adjust and gives us more control)
-    print("Turning lights on")
+    print("Will turn lights on in")
     zone = message[(message.find('zone')+5)]  # figure out what zone activity was detected in
     print(zone)
     lightOn(zone)
@@ -203,6 +213,25 @@ def sendMotion(request):
 def getWeather(request):
     with open('weathertest.txt') as weather:
         return HttpResponse(weather)
+
+#DO NOT CONFUSE THIS WITH lightOn() which is a local method.
+# This gets called by smart tilt control photon to turn all lights on in the lab. Returns 200 if ok
+@csrf_exempt
+@require_GET
+def lightsOn(request):
+    print("Photon told me to turn lights on")
+    allOn()
+    return HttpResponse(status = 200)
+
+#This one turns all lights off, again called by tilt ctrl photon
+
+@csrf_exempt
+@require_GET
+def lightsOff(request):
+    print("Photon told me to turn lights off")
+    allOff()
+    return HttpResponse(status = 200)
+
 
 @csrf_exempt
 @require_GET
@@ -287,8 +316,12 @@ def sendWeather(request):
         humdata = {"c": [{"v": "Date(" + newtime + ")"}, {"v": data[1]}, {}, {}]}
 
         global lightLevel1
-        lightLevel1 = data[2]
-        print(data[2])
+        newlightLevel = float(data[2])
+        if newlightLevel > (lightLevel1 + 0.5) or newlightLevel < (lightLevel1 - 0.5):
+
+            brightness((round(newlightLevel, 1)), '1')
+            lightLevel1 = float(data[2])
+            print(data[2])
 
     if data[3] == '2':
         tempdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[0]}, {}]}
@@ -296,17 +329,26 @@ def sendWeather(request):
         humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {"v": data[1]}, {}]}
 
         global lightLevel2
-        lightLevel2 = data[2]
-        print(data[2])
+        newlightLevel = float(data[2])
+        if newlightLevel > (lightLevel2 + 0.5) or newlightLevel < (lightLevel2 - 0.5):
+
+            brightness((round(newlightLevel, 1)), '2')
+            lightLevel2 = float(data[2])
+            print(data[2])
 
     if data[3] == '3':
         tempdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[0]}]}
         lightdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[2]}]}
         humdata = {"c": [{"v": "Date(" + newtime + ")"}, {}, {}, {"v": data[1]}]}
 
+        # if new light level significantly different from old light level, update and change brightness
         global lightLevel3
-        lightLevel3 = data[2]
-        print(data[2])
+        newlightLevel = float(data[2])
+        if newlightLevel > (lightLevel3+0.5) or newlightLevel < (lightLevel3-0.5):
+
+            brightness((round(newlightLevel, 1)), '3')
+            lightLevel3 = float(data[2])
+            print(data[2])
 
     with open('webapp/static/webapp/data.json', 'rb+') as outfile:
         outfile.seek(-2, os.SEEK_END)
@@ -350,10 +392,7 @@ def sendWeather(request):
     with open('weatherupdate.txt','w') as up:
         up.write(message)
         up.close
-    '''
-    tw = Twfuncs()
-    tw.update('weather updates! ' + message)
-    '''
+        
     return HttpResponse(status=200)
 def updateWeather(request):
     with open ('weatherupdate.txt') as up:
@@ -464,6 +503,9 @@ def rfcToGen(rfc):
 #Control lights
 import socket
 
+light1 = False
+light2 = False
+light3 = False
 
 def lightOn(zone):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -472,22 +514,30 @@ def lightOn(zone):
     s.connect(server_address)
 
     prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
-    if  zone == '3' and float(lightLevel3) < 3:
+
+    if zone == '3' and lightLevel3 <= 4:
         print("light level " + str(lightLevel3))
         s.send(prefix + b"490\n")
         s.send(prefix + b"c90\n")
+        global bulb3
+        bulb3 = True
 
-    if zone == '2' and float(lightLevel2) < 3:
+    if zone == '2' and lightLevel2 <= 4:
         print("light level " + str(lightLevel2))
         s.send(prefix + b"470\n")
         s.send(prefix + b"c70\n")
+        global bulb2
+        bulb2 = True
 
-    if zone == '1' and float(lightLevel1) < 3:
+    if zone == '1' and lightLevel1 <= 4:
         print("light level " + str(lightLevel1))
         s.send(prefix + b"450\n")
         s.send(prefix + b"c50\n")
+        global bulb1
+        bulb1 = True
 
     s.close()
+
 
 def lightOff(zone):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -496,16 +546,17 @@ def lightOff(zone):
     s.connect(server_address)
 
     prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
-    if zone == 3:
+    if zone == '3':
         s.send(prefix + b"4a0\n")
 
-    if zone == 2:
+    if zone == '2':
         s.send(prefix + b"480\n")
 
-    if zone == 1:
+    if zone == '1':
         s.send(prefix + b"460\n")
 
     s.close()
+
 
 def allOn():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -529,3 +580,64 @@ def allOff():
     s.send(prefix + b"410\n")
 
     s.close()
+
+def brightness(level, zone):
+
+    print("Adjusting brightness to level" +str(level))
+    if (zone == '1' and bulb1):
+        lightOn('1')  #make SURE it adjusts brightness to a bulb that is already on, and the correct one
+        adjust(level)
+
+    elif (zone == '2' and bulb2):
+        lightOn('2')
+        adjust(level)
+
+    elif(zone == '3' and bulb3): #if bulb in corresponding zone is on
+        lightOn('3')
+        adjust(level)
+
+
+
+def adjust(level):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_address = ('178.62.58.245', 38899)
+    s.connect(server_address)
+
+    prefix = b"APP#AC:CF:23:28:C0:20#CMD#"
+
+    if level <= 4.5:
+        s.send(prefix + b"4e19\n")  # maximum brightness if light level under 4.5
+
+    elif level <= 5.0:
+        s.send(prefix + b"4e18\n")
+
+    elif level <= 5.5:
+        s.send(prefix + b"4e16\n")
+
+    elif level <= 6.0:
+        s.send(prefix + b"4e14\n")
+
+    elif level <= 6.5:
+        s.send(prefix + b"4e12\n")
+
+    elif level <= 7.0:
+        s.send(prefix + b"4e10\n")
+
+    elif level <= 7.5:
+        s.send(prefix + b"4e08\n")
+
+    elif level <= 8.0:
+        s.send(prefix + b"4e06\n")
+
+    elif level <= 9.0:
+        s.send(prefix + b"4e04\n")
+
+    elif level > 9.0:
+        s.send(prefix + b"4e02\n")  # minimum brightness if lightlevel over 9.0
+
+    s.close()
+
+
+
+
