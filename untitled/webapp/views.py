@@ -332,7 +332,12 @@ def updateWeather(request):
             lightStr = "On"
         else:
             lightStr = "Off"
-        message = 'Hourly Lab weather data updates ! \nTempreture is ' + data[0] + '. \nHumidity is ' + data[1] + '.\n' + 'It seems the light has been turned ' + lightStr + '. Lightlevel: ' + data[2] + ' Lumen.'
+        temp = int(float(data[0]))
+        hum = int(float(data[1]))
+        message = 'Hourly Lab weather data updates ! \nTempreture is ' + str(temp) + ' Celsius Degrees' + '. \nRelative Humidity is ' + str(hum) + '%' + '.\n' + 'It seems the light has been turned ' + lightStr + '. Lightlevel: ' + data[2] + ' Lumen.'
+    now = datetime.datetime.now()
+    now = '\n---' + str(now)
+    message = message + now
     tw = Twfuncs()
     tw.update(message)
     fb = Fbfuncs()
