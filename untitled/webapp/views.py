@@ -1,13 +1,14 @@
 import json
 import os
 import gspread
+import datetime
 from oauth2client.service_account import ServiceAccountCredentials
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from .twitter import Twfuncs
-
+from .facebook import Fbfuncs
 
 # used to determine whether or not to turn light on (easier than scanning a 10000 lines of a text file)
 # 1,2,3 correspond to lab zones
@@ -143,7 +144,7 @@ def sendDoor(request):
     with open('doorhistory.txt','a') as history:
         history.write(message + '\n')
         history.close
-   
+
     with open('door.txt') as current:
         status  = str(message.split(',')[0])
         f = current.read().rstrip().split(',')[0]
@@ -153,7 +154,7 @@ def sendDoor(request):
             now = int(f) - 1
         if now < 0:
             now = 0
-        current.close 
+        current.close
     with open('door.txt','w') as door:
         door.write(str(now))
         return HttpResponse(status=200)
@@ -174,12 +175,30 @@ def getPer(request):
 @require_POST
 def sendMotion(request):
     message = request.body.decode('UTF-8')
+    activityType = message.split(' ')[0]
+    if activityType == 'Sound':
+        with open('soundupdate.txt','w') as sound:
+            sound.write(message)
+            sound.close
+        with open('soundhistory.txt','a') as sh:
+            sh.write(message)
+            sh.close
+    
+    if activityType == 'Motion':
+        with open('motionupdate.txt','w') as motion:
+            motion.write(message)
+            motion.close
+        with open('motionhistory.txt','a') as mh:
+            mh.write(message)
+            mh.close
+    '''
     with open('newmotion.txt','a') as newfile:
         newfile.write(message)
         newfile.close
     with open('motionupdate.txt','w') as mu:
         mu.write(message)
         mu.close
+    '''
     # turn light on where motion/sound was detected if light level below certain threshold (3 in this case,
     # decided to hard code it as it is easier to adjust and gives us more control)
     print("Will turn lights on in")
@@ -234,8 +253,39 @@ def sendZone(request):
 def getZone(request):
     with open('zone.txt') as zone:
         return HttpResponse(zone)
+@csrf_exempt
+@require_GET
+def getKettle(request):
+    with open('kettle.txt') as kettle:
+        return HttpResponse(kettle)
 
-    
+
+@csrf_exempt
+@require_POST
+def sendKettle(request):
+    message = request.body.decode('UTF-8')
+    num = message.split(',')[0]
+    with open('kettle.txt','w') as kettle:
+        kettle.write(num)
+        kettle.close
+        return HttpResponse(status=200)
+
+@csrf_exempt
+@require_POST
+def sendHy(request):
+    message = request.body.decode('UTF-8')
+    with open('hy.txt','a') as hy:
+        hy.write(message + ',')
+        hy.close
+        return HttpResponse(status=200)
+
+@csrf_exempt
+@require_GET
+def getHy(request):
+    with open('hy.txt') as hy:
+        return HttpResponse(hy)
+
+
 @csrf_exempt
 @require_GET
 def getMotion(request):
@@ -251,7 +301,7 @@ def sendWeather(request):
     elements  = timestr.split('-')
     newtime = ""
     for ele in elements:
-        newtime = newtime + ele + ',' 
+        newtime = newtime + ele + ','
     newtime = newtime[:-1]
     with open('www.txt','a') as nfile:
         for temp in data:
@@ -342,11 +392,59 @@ def sendWeather(request):
     with open('weatherupdate.txt','w') as up:
         up.write(message)
         up.close
-    # tw = Twfuncs()
-    # tw.update('weather updates! ' + message)
-
+        
     return HttpResponse(status=200)
+def updateWeather(request):
+    with open ('weatherupdate.txt') as up:
+        data = up.read().split(',')
+        lightlevel = float(data[2])
+        if lightlevel > 6:
+            lightStr = "On"
+        else:
+            lightStr = "Off"
+        temp = int(float(data[0]))
+        hum = int(float(data[1]))
+        message = 'Hourly Lab weather data updates ! \nTempreture is ' + str(temp) + ' Celsius Degrees' + '. \nRelative Humidity is ' + str(hum) + '%' + '.\n' + 'It seems the light has been turned ' + lightStr + '. Lightlevel: ' + data[2] + ' Lumen.'
+    now = datetime.datetime.now()
+    now = '\n---' + str(now)
+    message = message + now
+    tw = Twfuncs()
+    tw.update(message)
+    fb = Fbfuncs()
+    fb.update(message)
+    return HttpResponse('Weather data updated to twitter!')
+def updateActivity(request):
+    message = 'Hourly activity update! \n'
+    soundStr = 'Last '
+    motionStr = 'Last '
+    with open('soundupdate.txt') as su:
+        soundUpdate = su.read()
+        if soundUpdate == 'null':
+            soundStr = 'There has not been any new sound made!'
+        else:
+            soundStr = soundStr + soundUpdate
+            
+    with open('motionupdate.txt') as mu:
+        motionUpdate = mu.read().strip()
+        if motionUpdate == 'null':
+            motionStr = 'There has not been any new motion made!'
+        else:
+            motionStr = motionStr + motionUpdate
 
+    with open('door.txt') as door:
+        num = door.read()
+    numStr = '\nThere are currently ' + num + ' people in the lab.' 
+    if int(num) == 0:
+        numStr = '\nThere is currently nobody in the lab.'
+    tw = Twfuncs()
+    fb = Fbfuncs()
+    now = datetime.datetime.now()
+    now = '\n---' + str(now)
+    tw.update(message + soundStr + now)
+    tw.update(motionStr + numStr + now)
+    fb.update(message + soundStr + now)
+    fb.update(motionStr + numStr + now)
+    return HttpResponse('Activity data updated to twitter!')
 # Convert RFC timestamp to General
 def append(data):
     # use creds to create a client to interact with the Google Drive API

@@ -1,1 +1,0 @@
-Motion detected in zone 3. Device ID: 390044000247353137323334 in: Fri Dec  1 17:52:54 2017
