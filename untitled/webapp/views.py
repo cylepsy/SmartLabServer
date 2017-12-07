@@ -371,8 +371,8 @@ def updateActivity(request):
     now = datetime.datetime.now()
     now = '\n---' + str(now)
     tw.update(message + soundStr + now)
-    fb.update(message + soundStr + now)
     tw.update(motionStr + numStr + now)
+    fb.update(message + soundStr + now)
     fb.update(motionStr + numStr + now)
     return HttpResponse('Activity data updated to twitter!')
 # Convert RFC timestamp to General
