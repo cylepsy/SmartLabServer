@@ -26,6 +26,12 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^senddoor', views.sendDoor, name='sendDoor'),
     url(r'^getdoor', views.getDoor, name='getDoor'),
     url(r'^lighton', views.lightOn, name='lightOn'),
+    url(r'^sendkettle', views.sendKettle, name='sendKettle'),
+    url(r'^getkettle', views.getKettle, name='getKettle'),
+
+    url(r'^sendhy', views.sendHy, name='sendHy'),
+    url(r'^gethy', views.getHy, name='getHy'),
+
     url(r'^updateweather', views.updateWeather, name='updateWeather'),
     url(r'^updateactivity', views.updateActivity, name='updateActivity'),
 

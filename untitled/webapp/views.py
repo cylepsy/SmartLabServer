@@ -224,6 +224,37 @@ def sendZone(request):
 def getZone(request):
     with open('zone.txt') as zone:
         return HttpResponse(zone)
+@csrf_exempt
+@require_GET
+def getKettle(request):
+    with open('kettle.txt') as kettle:
+        return HttpResponse(kettle)
+
+
+@csrf_exempt
+@require_POST
+def sendKettle(request):
+    message = request.body.decode('UTF-8')
+    num = message.split(',')[0]
+    with open('kettle.txt','w') as kettle:
+        kettle.write(num)
+        kettle.close
+        return HttpResponse(status=200)
+
+@csrf_exempt
+@require_POST
+def sendHy(request):
+    message = request.body.decode('UTF-8')
+    with open('hy.txt','a') as hy:
+        hy.write(message + ',')
+        hy.close
+        return HttpResponse(status=200)
+
+@csrf_exempt
+@require_GET
+def getHy(request):
+    with open('hy.txt') as hy:
+        return HttpResponse(hy)
 
 
 @csrf_exempt
