@@ -4,9 +4,9 @@ from . import views
 
 urlpatterns = [
     url(r'^api', views.receive, name='index'),
-    
+
 url(r'^chart', views.chart, name= 'chart'),
-    
+
     url(r'^index', views.index, name= 'index'),
     url(r'^about', views.about, name= 'about'),
     url(r'^getmotion', views.getMotion, name= 'getMotion'),
@@ -26,10 +26,11 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^senddoor', views.sendDoor, name='sendDoor'),
     url(r'^getdoor', views.getDoor, name='getDoor'),
     url(r'^lighton', views.lightOn, name='lightOn'),
+    url(r'^updateweather', views.updateWeather, name='updateWeather'),
+    url(r'^updateactivity', views.updateActivity, name='updateActivity'),
 
 
 
-    
 
-    
+
 ]
