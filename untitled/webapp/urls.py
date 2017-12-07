@@ -32,6 +32,9 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^sendhy', views.sendHy, name='sendHy'),
     url(r'^gethy', views.getHy, name='getHy'),
 
+    url(r'^updateweather', views.updateWeather, name='updateWeather'),
+    url(r'^updateactivity', views.updateActivity, name='updateActivity'),
+
 
 
 
