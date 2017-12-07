@@ -200,6 +200,7 @@ def getWeather(request):
 @csrf_exempt
 @require_GET
 def lightsOn(request):
+    print("Photon told me to turn lights on")
     allOn()
     return HttpResponse(status = 200)
 
@@ -208,6 +209,7 @@ def lightsOn(request):
 @csrf_exempt
 @require_GET
 def lightsOff(request):
+    print("Photon told me to turn lights off")
     allOff()
     return HttpResponse(status = 200)
 
