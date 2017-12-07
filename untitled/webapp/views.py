@@ -195,6 +195,23 @@ def getWeather(request):
     with open('weathertest.txt') as weather:
         return HttpResponse(weather)
 
+#DO NOT CONFUSE THIS WITH lightOn() which is a local method.
+# This gets called by smart tilt control photon to turn all lights on in the lab. Returns 200 if ok
+@csrf_exempt
+@require_GET
+def lightsOn(request):
+    allOn()
+    return HttpResponse(status = 200)
+
+#This one turns all lights off, again called by tilt ctrl photon
+
+@csrf_exempt
+@require_GET
+def lightsOff(request):
+    allOff()
+    return HttpResponse(status = 200)
+
+
 @csrf_exempt
 @require_GET
 def getWeatherUp(request):

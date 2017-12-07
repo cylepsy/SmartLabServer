@@ -25,7 +25,8 @@ url(r'^chart', views.chart, name= 'chart'),
     url(r'^getup', views.getWeatherUp, name='getWeatherUp'),
     url(r'^senddoor', views.sendDoor, name='sendDoor'),
     url(r'^getdoor', views.getDoor, name='getDoor'),
-    url(r'^lighton', views.lightOn, name='lightOn'),
+    url(r'^lightson', views.lightsOn, name='lightsOn'),
+    url(r'^lightsoff', views.lightsOff, name='lightsOff'),
 
 
 
